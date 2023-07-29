@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User 2</title>
+</head>
+<body>
+    <h1>User 2</h1>
+    <div id="messageContainer"></div>
+    <input type="text" id="messageInput" />
+    <button onclick="sendMessage()">Send</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function sendMessage() {
+            const message = document.getElementById('messageInput').value;
+            socket.emit('message', {'message': message, 'sender': 'User 2'});
+            document.getElementById('messageInput').value = '';
+        }
+
+        socket.on('new_message', function(data) {
+            const messageDiv = document.createElement('div');
+            messageDiv.innerHTML = data.sender + ': ' + data.message;
+            document.getElementById('messageContainer').appendChild(messageDiv);
+        });
+    </script>
+</body>
+</html>
