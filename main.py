@@ -1,5 +1,6 @@
 import kivy.app
 from kivy.core.window import Window
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
@@ -33,17 +34,30 @@ class ChatPage(GridLayout):
         message = self.send_message.text
         print(f"Sending message: {message}")
 
-        # Update the chat history.
-        self.history.text += f"\nSent: {message}"
-        
+        # Pass the message to the other chatbox
+        other_chatbox = chatbox1 if self is chatbox2 else chatbox2
+        other_chatbox.receive_message(message)
+
         # Clear the text input.
         self.send_message.text = ""
 
+    def receive_message(self, message):
+        # Update the chat history to receive the message
+        self.history.text += f"\nReceived: {message}"
+
+class ChatApp(kivy.app.App):
+    def build(self):
+        Window.clearcolor = get_color_from_hex('#FFFFFF')  # Set the window background color to white
+
+        # Create a horizontal box layout and add two chatboxes side by side
+        layout = BoxLayout(orientation='horizontal')
+        global chatbox1, chatbox2
+        chatbox1 = ChatPage()
+        chatbox2 = ChatPage()
+        layout.add_widget(chatbox1)
+        layout.add_widget(chatbox2)
+
+        return layout
+
 if __name__ == "__main__":
-    Window.clearcolor = get_color_from_hex('#FFFFFF')  # Set the window background color to white
-
-    chatbox1 = ChatPage()
-    chatbox2 = ChatPage()
-
-    kivy.app.runTouchApp(chatbox1)
-    kivy.app.runTouchApp(chatbox2)
+    ChatApp().run()
